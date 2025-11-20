@@ -1,0 +1,23 @@
+# Auto-detect text files and normalize to LF in the repo
+* text=auto eol=lf
+
+# Explicit rules for common file types (all LF)
+*.py     text eol=lf
+*.html   text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
+*.md     text eol=lf
+*.txt    text eol=lf
+
+# Binary files - never try to normalize
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.pdf    binary
+*.zip    binary
+*.exe    binary
+*.dll    binary
+*.so     binary
+*.db     binary

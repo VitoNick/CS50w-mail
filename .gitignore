@@ -1,0 +1,35 @@
+# Python bytecode / caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Django local state
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Secrets / env files
+.env
+*.env
+
+# Logs & coverage
+*.log
+coverage.xml
+htmlcov/
+.coverage*
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
