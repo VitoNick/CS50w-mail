@@ -1,0 +1,9 @@
+-r requirements.txt
+
+djlint
+black
+ruff
+mypy
+django-stubs
+pytest
+pytest-django
