@@ -1,3 +1,28 @@
+body {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+}
+
+/* ========================================
+    POSSIBLE DARK MODE STYLINGS TO ADD LATER
+    ======================================== */
+
+/* .btn-outline-primary {
+    color: #6ea8fe;
+    border-color: #6ea8fe;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-control {
+    background-color: #2d2d30;
+    color: #d4d4d4;
+    border-color: #3e3e42;
+} */
+
 textarea {
     min-height: 400px;
 }
