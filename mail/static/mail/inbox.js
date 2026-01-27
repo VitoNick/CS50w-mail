@@ -24,26 +24,61 @@ function compose_email() {
 }
 
 function load_mailbox(mailbox) {
-  
-  // Show the mailbox and hide other views
-  document.querySelector('#emails-view').style.display = 'block';
-  document.querySelector('#compose-view').style.display = 'none';
-  
-  // Show the mailbox name
-  document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-  
-  // load mailbox
-  fetch(`/emails/${mailbox}`)
-    .then(response => response.json())
-    .then(emails => {
-      // Print emails
-      console.log(emails);
-      // list emails
-      document.querySelector('#emails-view').innerHTML += '<ul>';
-      emails.forEach(email => {
-        document.querySelector('#emails-view').innerHTML += `<li>${email.subject} - ${email.sender} - ${email.timestamp}</li>`;
-      });
-    });
+	// Show the mailbox and hide other views
+	document.querySelector("#emails-view").style.display = "block";
+	document.querySelector("#compose-view").style.display = "none";
+
+	// Show the mailbox name
+	document.querySelector("#emails-view").innerHTML = `<h3>${
+		mailbox.charAt(0).toUpperCase() + mailbox.slice(1)
+	}</h3>`;
+
+	// load mailbox
+	fetch(`/emails/${mailbox}`)
+		.then((response) => response.json())
+		.then((emails) => {
+			// Print emails
+			console.log(emails);
+			
+			// Create the <ul> element
+			const ul = document.createElement('ul');
+			
+			// Add each email as a <li>
+			emails.forEach((email) => {
+				// Create the <li> element
+				const li = document.createElement('li');
+				li.textContent = `${email.subject} - ${email.sender} - ${email.timestamp}`;
+				
+				// Add CSS class based on read status
+				if (email.read) {
+					li.classList.add('read');
+				} else {
+					li.classList.add('unread');
+				}
+				
+				// Add click listener to THIS specific <li>
+				li.addEventListener("click", () => {
+					email.read = !email.read;
+					console.log(email.read);
+					fetch(`/emails/${email.id}`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							read: email.read
+						})
+					})
+					.then(() => load_mailbox('inbox'));
+				});
+				
+				// Append this <li> to the <ul>
+				ul.appendChild(li);
+			});
+			
+			// Append the <ul> to the emails-view
+			document.querySelector('#emails-view').appendChild(ul);
+		});
 } 
 
 function send_email() {

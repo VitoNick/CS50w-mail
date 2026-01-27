@@ -20,32 +20,6 @@
     </form>
 
     Don't have an account? <a href="{% url 'register' %}">Register here.</a>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            console.log("Login page loaded");
-            document.addEventListener('keydown', function(event) {
-                console.log(`Key pressed: ${event.key}`);
-                if (event.key === 'Enter') {
-                    const selectElement = document.querySelector('#options');
-                    selectElement.value = selectElement.value === 'o1' ? 'o2' : 'o1';
-                }
-            });
-            // captured_value = 'Not-a-date-at-all!';
-            // console.log(captured_value);
-        });
-    </script>
-
-    <form>
-        <select id="options" class="form-control">
-            <option value="o1">Option 1</option>
-            <option value="o2">Option 2</option>
-        </select>
-        <input class="form-control" type="date">
-        <input class="btn btn-primary" type="submit" value="Submit">
-    </form>
-
     
 
 {% endblock %}
