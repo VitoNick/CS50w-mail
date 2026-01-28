@@ -62,7 +62,7 @@ function load_mailbox(mailbox) {
           // Marking the email as read/unread
           // TODO: Refactor to avoid toggling when loading mailbox
           // TODO: Add "unread" button to email view
-					email.read = !email.read;
+					email.read = true;
           // Debugging log
 					console.log(email.read);
 					fetch(`/emails/${email.id}`, {
@@ -96,8 +96,9 @@ function load_mailbox(mailbox) {
             const openEmailDiv = document.querySelector('#open-email');
             openEmailDiv.style.display = 'block'; // Show the email details
             openEmailDiv.innerHTML = `
-              <button id="close-email" style="float: right; cursor: pointer;">&times;</button>
-              <h4>${emailDetails.subject}</h4>
+            <button id="close-email" style="float: right; cursor: pointer;">&times;</button>
+            <button id="mark-email-unread" style="float: right; cursor: pointer;">Mark Unread</button>
+            <h4>${emailDetails.subject}</h4>
               <p><strong>From:</strong> ${emailDetails.sender}</p>
               <p><strong>To:</strong> ${emailDetails.recipients}</p>
               <p><strong>Timestamp:</strong> ${emailDetails.timestamp}</p>
@@ -108,6 +109,25 @@ function load_mailbox(mailbox) {
             // Add close button listener
             document.querySelector('#close-email').addEventListener('click', () => {
               openEmailDiv.style.display = 'none';
+            });
+            // Add mark unread button listener
+            document.querySelector('#mark-email-unread').addEventListener('click', () => {
+              email.read = false;
+              fetch(`/emails/${email.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                read: email.read
+              })
+              })
+              // After marking as unread, update the UI
+              .then(() => {
+              li.classList.remove('read');
+              li.classList.add('unread');
+              load_mailbox('inbox');
+              });
             });
           });
 				});
