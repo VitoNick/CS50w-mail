@@ -74,3 +74,43 @@ textarea {
     transform: translateX(4px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+
+#open-email {
+    display: none; /* Hidden by default */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 16px;
+    margin-top: 16px;
+    background-color: #f9f9f9;
+}
+
+#open-email h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+#open-email p {
+    margin: 8px 0;
+}
+
+#open-email hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 16px 0;
+}
+
+#close-email {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    line-height: 1;
+}
+
+#close-email:hover {
+    color: #333;
+}

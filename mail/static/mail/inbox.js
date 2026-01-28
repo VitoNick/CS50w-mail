@@ -27,6 +27,7 @@ function load_mailbox(mailbox) {
 	// Show the mailbox and hide other views
 	document.querySelector("#emails-view").style.display = "block";
 	document.querySelector("#compose-view").style.display = "none";
+	// document.querySelector("#open-email").style.display = "none"; // Hide email details
 
 	// Show the mailbox name
 	document.querySelector("#emails-view").innerHTML = `<h3>${
@@ -58,7 +59,11 @@ function load_mailbox(mailbox) {
 				
 				// Add click listener to THIS specific <li>
 				li.addEventListener("click", () => {
+          // Marking the email as read/unread
+          // TODO: Refactor to avoid toggling when loading mailbox
+          // TODO: Add "unread" button to email view
 					email.read = !email.read;
+          // Debugging log
 					console.log(email.read);
 					fetch(`/emails/${email.id}`, {
 						method: 'PUT',
@@ -69,10 +74,45 @@ function load_mailbox(mailbox) {
 							read: email.read
 						})
 					})
-					.then(() => load_mailbox('inbox'));
+					.then(response => {
+						if (response.ok) {
+							console.log(`Email ${email.id} marked as read: ${email.read}`);
+							load_mailbox('inbox');
+						} else {
+							console.error('Failed to update email');
+						}
+					})
+          // local only catch for things like server being down
+					.catch(error => console.error('Error:', error));
+          // Fetch and display email details
+          fetch(`/emails/${email.id}`, {
+            method: 'GET'
+          })
+          .then(response => response.json())
+          .then(emailDetails => {
+            // debug log email
+            console.log(`From: ${emailDetails.sender}\nTo: ${emailDetails.recipients}\nSubject: ${emailDetails.subject}\n\n${emailDetails.body}`);
+            // Display email details in the "open-email" div
+            const openEmailDiv = document.querySelector('#open-email');
+            openEmailDiv.style.display = 'block'; // Show the email details
+            openEmailDiv.innerHTML = `
+              <button id="close-email" style="float: right; cursor: pointer;">&times;</button>
+              <h4>${emailDetails.subject}</h4>
+              <p><strong>From:</strong> ${emailDetails.sender}</p>
+              <p><strong>To:</strong> ${emailDetails.recipients}</p>
+              <p><strong>Timestamp:</strong> ${emailDetails.timestamp}</p>
+              <hr>
+              <p>${emailDetails.body}</p>
+            `;
+            
+            // Add close button listener
+            document.querySelector('#close-email').addEventListener('click', () => {
+              openEmailDiv.style.display = 'none';
+            });
+          });
 				});
 				
-				// Append this <li> to the <ul>
+				// Append this <li> to the <ul> (This is the important part that fixed the innerHTML issue)
 				ul.appendChild(li);
 			});
 			
