@@ -40,7 +40,6 @@ function load_mailbox(mailbox) {
 		.then((emails) => {
 			// Print emails
 			console.log(emails);
-			
 			// Create the <ul> element
 			const ul = document.createElement('ul');
 			
@@ -50,6 +49,9 @@ function load_mailbox(mailbox) {
 				const li = document.createElement('li');
 				li.textContent = `${email.subject} - ${email.sender} - ${email.timestamp}`;
 				
+        // if (mailbox == 'archive' && email.archived == true)
+        //   li.style.display = "block";
+
 				// Add CSS class based on read status
 				if (email.read) {
 					li.classList.add('read');
@@ -60,8 +62,6 @@ function load_mailbox(mailbox) {
 				// Add click listener to THIS specific <li>
 				li.addEventListener("click", () => {
           // Marking the email as read/unread
-          // TODO: Refactor to avoid toggling when loading mailbox
-          // TODO: Add "unread" button to email view
 					email.read = true;
           // Debugging log
 					console.log(email.read);
@@ -82,7 +82,7 @@ function load_mailbox(mailbox) {
 							console.error('Failed to update email');
 						}
 					})
-          // local only catch for things like server being down
+          // Local only catch for things like server being down
 					.catch(error => console.error('Error:', error));
           // Fetch and display email details
           fetch(`/emails/${email.id}`, {
@@ -90,14 +90,16 @@ function load_mailbox(mailbox) {
           })
           .then(response => response.json())
           .then(emailDetails => {
-            // debug log email
+            // Debug log email
             console.log(`From: ${emailDetails.sender}\nTo: ${emailDetails.recipients}\nSubject: ${emailDetails.subject}\n\n${emailDetails.body}`);
             // Display email details in the "open-email" div
             const openEmailDiv = document.querySelector('#open-email');
             openEmailDiv.style.display = 'block'; // Show the email details
             openEmailDiv.innerHTML = `
             <button id="close-email" style="float: right; cursor: pointer;">&times;</button>
-            <button id="mark-email-unread" style="float: right; cursor: pointer;">Mark Unread</button>
+            <button id="un-read-email" style="float: right; cursor: pointer;">Mark Unread</button>
+            <button id="archive-email" style="float: right; cursor: pointer;">Archive</button>
+
             <h4>${emailDetails.subject}</h4>
               <p><strong>From:</strong> ${emailDetails.sender}</p>
               <p><strong>To:</strong> ${emailDetails.recipients}</p>
@@ -111,27 +113,50 @@ function load_mailbox(mailbox) {
               openEmailDiv.style.display = 'none';
             });
             // Add mark unread button listener
-            document.querySelector('#mark-email-unread').addEventListener('click', () => {
+            document.querySelector('#un-read-email').addEventListener('click', () => {
               email.read = false;
+                fetch(`/emails/${email.id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  read: email.read
+                })
+                })
+                .then(response => {
+                if (response.ok) {
+                  // After marking as unread, update the UI
+                  li.classList.remove('read');
+                  li.classList.add('unread');
+                  load_mailbox('inbox');
+                } else {
+                  console.error('Failed to update email');
+                }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            document.querySelector('#archive-email').addEventListener('click', () => {
+              email.archived = true;
               fetch(`/emails/${email.id}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                read: email.read
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  archived : email.archived
+                })
               })
-              })
-              // After marking as unread, update the UI
-              .then(() => {
-              li.classList.remove('read');
-              li.classList.add('unread');
-              load_mailbox('inbox');
+              .then(response => {
+                if (response.ok) {
+                  load_mailbox('inbox');
+                };
               });
             });
           });
-				});
-				
+        });
+
 				// Append this <li> to the <ul> (This is the important part that fixed the innerHTML issue)
 				ul.appendChild(li);
 			});
